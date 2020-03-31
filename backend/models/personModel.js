@@ -22,12 +22,12 @@ var personSchema = new Schema({
     type: String,
     required: true,
   }
-​
+
 });
-​
+
 personSchema.pre('save', function(next){
   let person = this;
-​
+
   bcrypt.genSalt(143, function(err, salt){
     bcrypt.hash(person.password, salt, function(err, hash){
       person.password= hash;
@@ -35,5 +35,5 @@ personSchema.pre('save', function(next){
     });
   });
 });
-​
+
 export default mongoose.model('Person', personSchema);

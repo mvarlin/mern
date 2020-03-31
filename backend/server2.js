@@ -11,49 +11,49 @@ import responseTime from 'response-time';
 import favicon from 'serve-favicon';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
-​
+
 // ROUTERS
 import indexRouter from './routes/index';
 import playerRouter from './routes/player';
 import messageRouter from './routes/message';
 import userRouter from './routes/user';
-​
+
 const app = express();
-​
+
 // secure the server by setting various HTTP headers
 app.use(helmet());
-​
+
 // only parse JSON
 app.use(express.json());
-​
+
 // only parse urlencoded bodies
 app.use(
   express.urlencoded({
     extended: false
   })
 );
-​
+
 // protect against HTTP parameter pollution attacks
 app.use(hpp());
-​
+
 // gzip/deflate/br compression outgoing responses
 app.use(compression());
-​
+
 // parse Cookie header and populate req.cookies with an object keyed by the cookie names
 app.use(cookieParser());
-​
+
 // allow AJAX requests to skip the Same-origin policy and access resources from remote hosts
 app.use(cors());
-​
+
 // serve a visual favicon for the browser
 app.use(favicon(__dirname + '/favicon.ico'));
-​
+
 // request logger | (dev) output are colored by response status
 app.use(morgan('dev'));
-​
+
 // records the response time for HTTP requests
 app.use(responseTime());
-​
+
 // limit repeated requests to endpoints such as password reset
 app.use(
   new rateLimit({
@@ -62,9 +62,9 @@ app.use(
     message: 'Too many requests from this IP, please try again in 15 minutes'
   })
 );
-​
+
 dotenv.config();
-​
+
 mongoose
   .connect(
     `mongodb://${process.env.DBUSER}:${process.env.PASSWORD}@${process.env.HOST}:${process.env.MONGO_PORT}/${process.env.DATABASE}`,
@@ -76,17 +76,17 @@ mongoose
   .then(() => {
     console.log(emoji.get('heavy_check_mark'), 'MongoDB connection success');
   });
-​
+
 // routes
 app.use('/', indexRouter);
 app.use('/player', playerRouter);
 app.use('/message', messageRouter);
 app.use('/user', userRouter);
-​
+
 // setup ip address and port number
 app.set('port', process.env.PORT || 3000);
 app.set('ipaddr', '0.0.0.0');
-​
+
 // start express server
 app.listen(app.get('port'), app.get('ipaddr'), function () {
   console.log(

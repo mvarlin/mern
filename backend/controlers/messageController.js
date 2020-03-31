@@ -1,6 +1,6 @@
-import UserSchema from '../models/userModels';
+import UserSchema from '../models/userModel';
 import mongoose from 'mongoose';
-import MessageSchema from '../models/userModels';
+import MessageSchema from '../models/userModel';
 
 const Message = mongoose.model('Message', MessageSchema);
 
