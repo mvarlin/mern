@@ -1,7 +1,5 @@
 import Button from '@material-ui/core/Button';
-import Checkbox from '@material-ui/core/Checkbox';
 import Container from '@material-ui/core/Container';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
@@ -11,16 +9,11 @@ import React from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import * as yup from 'yup';
-import './SignUp.scss';
+import './SignIn.scss';
 
 const validationRules = yup.object().shape({
   email: yup.string().required('Email is required').email('Invalid email address'),
   password: yup.string().required('Password is required'),
-  passwordConfirmation: yup
-    .string()
-    .required('Password confirmation is required')
-    .oneOf([yup.ref('password'), null], 'Passwords must match'),
-  acceptTerms: yup.boolean().oneOf([true], 'You must accept terms and conditions')
 });
 
 const useStyles = makeStyles(theme => ({
@@ -30,7 +23,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const SignUp = () => {
+const SignIn = () => {
   const classes = useStyles();
 
   return (
@@ -38,26 +31,13 @@ const SignUp = () => {
       <Formik
         validateOnMount={true}
         initialValues={{
-          firstName: '',
-          lastName: '',
           email: '',
           password: '',
-          passwordConfirmation: '',
-          acceptTerms: false
         }}
         validationSchema={validationRules}
         onSubmit={(values, { setSubmitting }) => {
 
-          console.log(values.firstName);
-          console.log(values.lastName);
-          console.log(values.email);
-          console.log(values.password);
-          console.log(values.passwordConfirmation);
-          console.log(values.acceptTerms);
-
           const valueAll = {
-            'firstName': values.firstName,
-            'lastName': values.lastName,
             'email': values.email,
             'password': values.password,
           };
@@ -71,15 +51,24 @@ const SignUp = () => {
           formBody = formBody.join('&');
           console.log(formBody);
 
-          fetch('http://localhost:3000/person/signUp', {
+          fetch('http://localhost:3000/person/login', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
             },
             body: formBody
-          });
+          })
+            .then(response => response.json())
+            .then(responseData => {
+              if (responseData) {
+                localStorage.setItem('token', responseData.token);
+                // setIsConnected(true);
+              }
+            })
+            .catch(error => console.warn(error));
 
-
+          console.log(values.email);
+          console.log(values.password);
           setSubmitting(true);
           setTimeout(() => {
             setSubmitting(false);
@@ -93,35 +82,12 @@ const SignUp = () => {
             });
           }, 3000);
         }}>
-        {({ values, errors, touched, handleChange, handleBlur, handleSubmit, isSubmitting }) => (
+        {({ values, errors, touched, handleChange, handleBlur, handleSubmit }) => (
           <Container component='main' maxWidth='sm'>
-            <h1>Signup</h1>
+            <h1>SignIn</h1>
             <div style={{ marginTop: 10 }}>
               <form onSubmit={handleSubmit}>
                 <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      variant='outlined'
-                      fullWidth
-                      id='firstName'
-                      name='firstName'
-                      label='First Name'
-                      value={values.firstName}
-                      onChange={handleChange}
-                      onBlur={handleBlur}></TextField>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      variant='outlined'
-                      fullWidth
-                      id='lastName'
-                      name='lastName'
-                      label='Last Name'
-                      value={values.lastName}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                    />
-                  </Grid>
                   <Grid item xs={12}>
                     <TextField
                       variant='outlined'
@@ -151,45 +117,10 @@ const SignUp = () => {
                     />
                     {touched.password && errors.password ? <div className='error'>{errors.password}</div> : null}
                   </Grid>
-                  <Grid item xs={12}>
-                    <TextField
-                      variant='outlined'
-                      required
-                      fullWidth
-                      id='passwordConfirmation'
-                      name='passwordConfirmation'
-                      label='Password confirmation'
-                      type='password'
-                      value={values.passwordConfirmation}
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                    />
-                    {touched.password && touched.passwordConfirmation && errors.passwordConfirmation ? (
-                      <div className='error'>{errors.passwordConfirmation}</div>
-                    ) : null}
-                  </Grid>
-                  <Grid item xs={12}>
-                    <FormControlLabel
-                      control={
-                        <Checkbox
-                          id='acceptTerms'
-                          name='acceptTerms'
-                          value='acceptTerms'
-                          checked={values.acceptTerms}
-                          onChange={handleChange('acceptTerms')}
-                        />
-                      }
-                      label='I have read terms and conditions'
-                    />
-                    {touched.acceptTerms && errors.acceptTerms ? (
-                      <div className='error'>{errors.acceptTerms}</div>
-                    ) : null}
-                  </Grid>
                 </Grid>
                 <Button
                   className={classes.button}
                   type='submit'
-                  disabled={isSubmitting || Object.entries(errors).length !== 0}
                   fullWidth
                   variant='contained'
                   color='primary'
@@ -216,4 +147,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default SignIn;

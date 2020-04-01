@@ -38,3 +38,8 @@ export const login = async (req, res) => {
     return res.send('this email and password combination is incorrect');
   });
 };
+
+export const all = async (req, res) => {
+  const people = await Person.find();
+  res.json(people);
+};

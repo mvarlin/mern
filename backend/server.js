@@ -18,7 +18,7 @@ import playerRouter from './routes/player';
 //import messageRouter from './routes/message';
 import userRouter from './routes/user';
 import personRouter from './routes/person';
-
+import fishRouter from './routes/fish';
 const app = express();
 
 // secure the server by setting various HTTP headers
@@ -98,6 +98,7 @@ app.use('/player', playerRouter);
 //app.use('/message', messageRouter);
 app.use('/user', userRouter);
 app.use('/person', personRouter);
+app.use('/fish', fishRouter);
 
 // setup ip address and port number
 app.set('port', process.env.PORT || 3000);
